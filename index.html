@@ -5,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Checklist</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
   </head>
   <body>
     <div id="app">
       <ul>
-        <li v-for="task in tasks">
+        <li v-for="(task, index) in tasks">
           {{ task.info }}
+          <button v-on:click="deleteTask(task.id, index)"
+                  class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete">
+            <i class="fa fa-trash"></i>
+          </button>
         </li>
       </ul>
     </div>
@@ -21,6 +26,16 @@
     el: '#app',
     data: {
       tasks: []
+    },
+    methods: {
+      deleteTask(id, index) {
+        fetch('http://localhost:8080/tasks/' + id, {
+          method: "DELETE"
+        })
+        .then(() => {
+          this.tasks.splice(index, 1)
+        })
+      }
     },
     mounted() {
       fetch('http://localhost:8080/tasks')
