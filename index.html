@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Checklist</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div id="app">
+      <ul>
+        <li v-for="task in tasks">
+          {{ task.info }}
+        </li>
+      </ul>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+  <script>
+  new Vue({
+    el: '#app',
+    data: {
+      tasks: [
+        {"id":9991, "info":"Hello", "done":true},
+        {"id":9992, "info":"World", "done":false}
+      ]
+    }
+  })
+  </script>
+</html>
