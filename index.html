@@ -9,15 +9,39 @@
   </head>
   <body>
     <div id="app">
-      <ul>
-        <li v-for="(task, index) in tasks">
-          {{ task.info }}
-          <button v-on:click="deleteTask(task.id, index)"
-                  class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete">
-            <i class="fa fa-trash"></i>
-          </button>
-        </li>
-      </ul>
+      <div class="container">
+        <h3 class="pt-4">
+          Checklist
+        </h3>
+        <h4 class="pb-4">
+          <small class="text-muted">
+            Vue.js <a href="https://github.com/TheInvader360/checklist-frontend-vuejs">frontend</a>
+            & Go <a href="https://github.com/TheInvader360/checklist-backend-golang">backend</a>
+          </small>
+        </h4>
+        <table class="table table-hover">
+          <tbody>
+            <tr v-for="(task, index) in tasks">
+              <td>{{ task.id }}</td>
+              <td>{{ task.info }}</td>
+              <td>{{ task.done }}</td>
+              <td>
+                <button v-on:click="deleteTask(task.id, index)" class="btn btn-danger btn-sm rounded-0 float-right" type="button">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="input-group">
+          <input v-on:keyup.enter="createTask" v-model="creatingTask.info" class="form-control" type="text">
+          <div class="input-group-append">
+            <button button v-on:click="createTask" class="btn btn-primary" type="button">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
@@ -25,7 +49,8 @@
   new Vue({
     el: '#app',
     data: {
-      tasks: []
+      tasks: [],
+      creatingTask: {}
     },
     methods: {
       deleteTask(id, index) {
@@ -34,6 +59,22 @@
         })
         .then(() => {
           this.tasks.splice(index, 1)
+        })
+      },
+      createTask() {
+        this.creatingTask.done = false
+        fetch('http://localhost:8080/task', {
+          body: JSON.stringify(this.creatingTask),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST"
+        })
+        .then(response => response.json())
+        .then((data) => {
+          this.creatingTask.id = data.id
+          this.tasks.push(this.creatingTask)
+          this.creatingTask = {}
         })
       }
     },
