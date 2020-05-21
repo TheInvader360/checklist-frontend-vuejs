@@ -20,10 +20,14 @@
   new Vue({
     el: '#app',
     data: {
-      tasks: [
-        {"id":9991, "info":"Hello", "done":true},
-        {"id":9992, "info":"World", "done":false}
-      ]
+      tasks: []
+    },
+    mounted() {
+      fetch('http://localhost:8080/tasks')
+      .then(response => response.json())
+      .then((data) => {
+        this.tasks = data
+      })
     }
   })
   </script>
