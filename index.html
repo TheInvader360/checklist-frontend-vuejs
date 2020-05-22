@@ -53,7 +53,7 @@
     el: '#app',
     data: {
       tasks: [],
-      creatingTask: {}
+      creatingTask: {"id": -1, "info": "", "done": false}
     },
     methods: {
       deleteTask(id, index) {
@@ -90,7 +90,7 @@
           .then((data) => {
             this.creatingTask.id = data.id
             this.tasks.push(this.creatingTask)
-            this.creatingTask = {}
+            this.creatingTask = {"id": -1, "info": "", "done": false}
           })
         }
       }
