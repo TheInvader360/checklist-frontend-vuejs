@@ -6,6 +6,12 @@
     <title>Checklist</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+    <style>
+      .done {
+        color: #a6acaf;
+        text-decoration: line-through;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
@@ -19,21 +25,7 @@
             & Go <a href="https://github.com/TheInvader360/checklist-backend-golang">backend</a>
           </small>
         </h4>
-        <table class="table table-hover">
-          <tbody>
-            <tr v-for="(task, index) in tasks">
-              <td>{{ task.id }}</td>
-              <td>{{ task.info }}</td>
-              <td>{{ task.done }}</td>
-              <td>
-                <button v-on:click="deleteTask(task.id, index)" class="btn btn-danger btn-sm rounded-0 float-right" type="button">
-                  <i class="fa fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="input-group">
+        <div class="input-group pb-4">
           <input v-on:keyup.enter="createTask" v-model="creatingTask.info" class="form-control" type="text">
           <div class="input-group-append">
             <button button v-on:click="createTask" class="btn btn-primary" type="button">
@@ -41,6 +33,17 @@
             </button>
           </div>
         </div>
+        <ul class="list-group">
+          <li v-for="(task, index) in tasks" :key="task.id" class="list-group-item d-flex justify-content-between">
+            <button v-on:click="toggleDoneTask(task)" class="btn btn-sm btn-success mr-4" type="button">
+              <i class="fa fa-check"></i>
+            </button>
+            <p v-bind:class="{'done': task.done}" class="p-0 m-0 flex-grow-1">{{ task.info }}</p>
+            <button v-on:click="deleteTask(task.id, index)" class="btn btn-sm btn-danger float-right" type="button">
+              <i class="fa fa-trash"></i>
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   </body>
@@ -61,21 +64,35 @@
           this.tasks.splice(index, 1)
         })
       },
-      createTask() {
-        this.creatingTask.done = false
-        fetch('http://localhost:8080/task', {
-          body: JSON.stringify(this.creatingTask),
+      toggleDoneTask(task) {
+        task.done = !task.done
+        fetch('http://localhost:8080/tasks/' + task.id, {
+          body: JSON.stringify(task),
           headers: {
             "Content-Type": "application/json",
           },
-          method: "POST"
+          method: "PUT"
+        }).catch((error) => {
+          task.done = !task.done
         })
-        .then(response => response.json())
-        .then((data) => {
-          this.creatingTask.id = data.id
-          this.tasks.push(this.creatingTask)
-          this.creatingTask = {}
-        })
+      },
+      createTask() {
+        if(this.creatingTask.info) {
+          this.creatingTask.done = false
+          fetch('http://localhost:8080/task', {
+            body: JSON.stringify(this.creatingTask),
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST"
+          })
+          .then(response => response.json())
+          .then((data) => {
+            this.creatingTask.id = data.id
+            this.tasks.push(this.creatingTask)
+            this.creatingTask = {}
+          })
+        }
       }
     },
     mounted() {
